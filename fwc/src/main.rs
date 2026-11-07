@@ -34,6 +34,7 @@ impl Counts {
     }
 }
 
+#[derive(Default)]
 struct Options {
     lines: bool,
     words: bool,
@@ -83,10 +84,7 @@ fn main() {
     let mut flags: Vec<&String> = Vec::new();
     let mut total: Counts = Counts::default();
     let mut failed = false;
-
-    let mut show_lines = false;
-    let mut show_bytes = false;
-    let mut show_words = false;
+    let mut options = Options::default();
 
     for arg in &args {
         if arg.starts_with("-") {
@@ -104,9 +102,9 @@ fn main() {
     for flag in &flags {
         for c in flag[1..].chars() {
             match c {
-                'l' => show_lines = true,
-                'c' => show_bytes = true,
-                'w' => show_words = true,
+                'l' => options.lines = true,
+                'c' => options.bytes = true,
+                'w' => options.words = true,
                 _ => {
                     eprintln!("fwc: unknown option {c}");
                     std::process::exit(1);
@@ -115,16 +113,16 @@ fn main() {
         }
     }
 
-    if !show_lines && !show_words && !show_bytes {
-        show_lines = true;
-        show_bytes = true;
-        show_words = true;
+    if !options.lines && !options.bytes && !options.words {
+        options.lines = true;
+        options.bytes = true;
+        options.words = true;
     }
 
     let options = Options {
-        lines: show_lines,
-        bytes: show_bytes,
-        words: show_words,
+        lines: options.lines,
+        bytes: options.bytes,
+        words: options.words,
     };
 
     for file in &files {
