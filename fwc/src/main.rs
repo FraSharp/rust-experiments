@@ -102,13 +102,15 @@ fn main() {
     };
 
     for flag in &flags {
-        match flag.as_str() {
-            "-l" => show_lines = true,
-            "-c" => show_bytes = true,
-            "-w" => show_words = true,
-            _ => {
-                eprintln!("fwc: unknown option {flag}");
-                std::process::exit(1);
+        for c in flag[1..].chars() {
+            match c {
+                'l' => show_lines = true,
+                'c' => show_bytes = true,
+                'w' => show_words = true,
+                _ => {
+                    eprintln!("fwc: unknown option {c}");
+                    std::process::exit(1);
+                }
             }
         }
     }
