@@ -132,7 +132,7 @@ fn main() {
                 total.add(&counts);
             }
             Err(error) => {
-                eprintln!("{file}: {error}");
+                eprintln!("fwc: {file}: {error}");
                 failed = true;
             }
         }
