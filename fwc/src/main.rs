@@ -95,7 +95,7 @@ fn main() {
     }
 
     if files.is_empty() {
-        eprintln!("usage: fwc <file>");
+        eprintln!("usage: fwc [-lwc] <file>");
         std::process::exit(1);
     };
 
