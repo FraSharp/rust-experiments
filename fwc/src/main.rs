@@ -23,11 +23,11 @@ impl Counts {
         if options.lines {
             line.push_str(&format!("{:>8}", self.lines));
         }
-        if options.words {
-            line.push_str(&format!("{:>8}", self.words));
-        }
         if options.bytes {
             line.push_str(&format!("{:>8}", self.bytes));
+        }
+        if options.words {
+            line.push_str(&format!("{:>8}", self.words));
         }
 
         println!("{line} {name}");
@@ -37,8 +37,8 @@ impl Counts {
 #[derive(Default)]
 struct Options {
     lines: bool,
-    words: bool,
     bytes: bool,
+    words: bool,
 }
 
 fn count(filename: &str) -> Result<Counts, Box<dyn Error>> {
@@ -82,7 +82,7 @@ fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
     let mut files: Vec<&String> = Vec::new();
     let mut flags: Vec<&String> = Vec::new();
-    let mut total: Counts = Counts::default();
+    let mut total = Counts::default();
     let mut failed = false;
     let mut options = Options::default();
 
@@ -97,7 +97,7 @@ fn main() {
     if files.is_empty() {
         eprintln!("usage: fwc [-lwc] <file>");
         std::process::exit(1);
-    };
+    }
 
     for flag in &flags {
         for c in flag[1..].chars() {
