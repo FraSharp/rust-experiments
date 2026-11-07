@@ -17,12 +17,27 @@ impl Counts {
         self.words += other.words;
     }
 
-    fn print(&self, name: &str) {
-        println!(
-            "{:>8}{:>8}{:>8} {}",
-            self.lines, self.words, self.bytes, name
-        );
+    fn print(&self, name: &str, options: &Options) {
+        let mut line = String::new();
+
+        if options.lines {
+            line.push_str(&format!("{:>8}", self.lines));
+        }
+        if options.words {
+            line.push_str(&format!("{:>8}", self.words));
+        }
+        if options.bytes {
+            line.push_str(&format!("{:>8}", self.bytes));
+        }
+
+        println!("{line} {name}");
     }
+}
+
+struct Options {
+    lines: bool,
+    words: bool,
+    bytes: bool,
 }
 
 fn count(filename: &str) -> Result<Counts, Box<dyn Error>> {
@@ -69,6 +84,10 @@ fn main() {
     let mut total: Counts = Counts::default();
     let mut failed = false;
 
+    let mut show_lines = false;
+    let mut show_bytes = false;
+    let mut show_words = false;
+
     for arg in &args {
         if arg.starts_with("-") {
             flags.push(arg);
@@ -78,14 +97,38 @@ fn main() {
     }
 
     if files.is_empty() {
-        eprintln!("usage: wc <file>");
+        eprintln!("usage: fwc <file>");
         std::process::exit(1);
+    };
+
+    for flag in &flags {
+        match flag.as_str() {
+            "-l" => show_lines = true,
+            "-c" => show_bytes = true,
+            "-w" => show_words = true,
+            _ => {
+                eprintln!("fwc: unknown option {flag}");
+                std::process::exit(1);
+            }
+        }
+    }
+
+    if !show_lines && !show_words && !show_bytes {
+        show_lines = true;
+        show_bytes = true;
+        show_words = true;
+    }
+
+    let options = Options {
+        lines: show_lines,
+        bytes: show_bytes,
+        words: show_words,
     };
 
     for file in &files {
         match count(file) {
             Ok(counts) => {
-                counts.print(file);
+                counts.print(file, &options);
                 total.add(&counts);
             }
             Err(error) => {
@@ -96,7 +139,7 @@ fn main() {
     }
 
     if files.len() > 1 {
-        total.print("total");
+        total.print("total", &options);
     }
 
     if failed {
